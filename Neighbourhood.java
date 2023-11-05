@@ -1,13 +1,30 @@
 public class Neighbourhood {
-    private char status;
+    private char status = Const.EMPTY;
     private double probability = 0;
-    private boolean newlyInfected;
+    private int timeTillResistance = Const.timeTillResistance;
+    private boolean changedStatus = false;
 
     public Neighbourhood() {
-        this.status = Const.EMPTY;
-        this.newlyInfected = false;
     }
 
+    public void updateCounter() {
+        if (timeTillResistance > 0) {
+            this.timeTillResistance--;
+            this.changedStatus = false;
+        } else {
+            this.status = 'R';
+            this.changedStatus = true;
+            this.probability = 0;
+        }
+    }
+
+
+    public int getTimeTillResistance() {
+        return timeTillResistance;
+    }
+    public void setTimeTillResistance(int timeTillResistance) {
+        this.timeTillResistance = timeTillResistance;
+    }
     public double getProbability() {
         return probability;
     }
@@ -20,10 +37,10 @@ public class Neighbourhood {
     public void setStatus(char status) {
         this.status = status;
     }
-    public boolean isNewlyInfected() {
-        return newlyInfected;
+    public boolean isChangedStatus() {
+        return changedStatus;
     }
-    public void setNewlyInfected(boolean newlyInfected) {
-        this.newlyInfected = newlyInfected;
+    public void setChangedStatus(boolean changedStatus) {
+        this.changedStatus = changedStatus;
     }
 }

@@ -7,14 +7,16 @@ public class Main {
 
 
         int size = 10;
-        double prob1 = 0.2;
-        double prob2 = 0.5;
-        int resisTime = 3;
+        double prob1 = 0.1;
+        double prob2 = 0.3;
+        int resisTime = 5;
         int administrations = 1;
         int cooldownVac = 10;
 
         new Const(prob1, prob2, resisTime, administrations, cooldownVac);
-        City sim = new City(size);
+        City city = new City(size);
+        city.start();
+        city.updateCity();
 
 
 

@@ -1,25 +1,27 @@
-import javax.management.QueryEval;
 import java.util.*;
 import java.util.Queue;
+import java.lang.StringBuilder;
 
 
 public class City {
 
     private Neighbourhood[][] block;
     private final int size;
-    private Queue<int[]> newlyInfected;
-    private PriorityQueue<int[]> vaccinationQ;
-    private int[][] neighbors = {
+    private Queue<int[]> newlyInfected = new LinkedList<>();
+    private LinkedList<int[]> vaccinationQ = new LinkedList<>();
+    private final int[][] neighbors = {
             {-1, -1}, {-1, 0}, {-1, 1},
             {0, -1},           {0, 1},
             {1, -1},  {1, 0},  {1, 1}
     };
-    private Comparator<int[]> neiComparator = new Comparator<int[]>() {
+    private final Comparator<int[]> neiComparator = new Comparator<int[]>() {
         @Override
         public int compare(int[] cordSet1, int[] cordSet2) {
             return (countInfected(cordSet1) > countInfected(cordSet2))  ? 1:-1;
         }
     };
+
+    
 
 
 
@@ -48,13 +50,22 @@ public class City {
         int randomColumn = random.nextInt(this.size);
         int randomRow = random.nextInt(this.size);
 
-        this.block[randomRow][randomColumn].setStatus('i');
+        this.block[randomRow][randomColumn].setStatus('I');
         this.newlyInfected.add(new int[] {randomRow, randomColumn});
     }
 
     public void updateCity() {
-        this.updateInfections();
-        this.updateProbabilities();
+        while (true) {
+            try{Thread.sleep(2000); } catch(Exception e) {}
+
+            this.updateInfections();
+            this.updateProbabilities();
+            this.administerVax();
+            this.updateCounters();
+
+            this.displayGrid();
+        }
+
     }
 
 
@@ -64,7 +75,6 @@ public class City {
             updateProximity(cordSet[0], cordSet[1]);
         }
     }
-
     private void updateProximity(int row, int column) {
 
         int rowToCheck;
@@ -75,9 +85,10 @@ public class City {
             rowToCheck = row + neighbor[0];
             colToCheck = column + neighbor[1];
 
-            neiToCheck = this.block[rowToCheck][colToCheck];
-
             if (((rowToCheck >= 0) && (rowToCheck < this.size)) && ((colToCheck >= 0) && (colToCheck < this.size))) {
+
+                neiToCheck = this.block[rowToCheck][colToCheck];
+
                 if (neiToCheck.getStatus() == Const.EMPTY) {
                     neiToCheck.setProbability(Const.prob1);
                 } else if (neiToCheck.getStatus() == Const.prob1) {
@@ -88,23 +99,32 @@ public class City {
 
 
     }
-    private void updateInfections() {
-        Random rand = new Random();
-        Neighbourhood currentNei;
 
-        for (int row = 0; row < this.size; row++) {
-            for (int column = 0; column < this.size; column++) {
-                currentNei = this.block[row][column];
-                if (rand.nextDouble() < currentNei.getProbability()) {
-                    currentNei.setStatus('i');
-                    currentNei.setNewlyInfected(true);
+
+    private void updateProximity2(int row, int column) {
+
+        int rowToCheck;
+        int colToCheck;
+        Neighbourhood neiToCheck;
+
+        for (int[] neighbor : neighbors) {
+            rowToCheck = row + neighbor[0];
+            colToCheck = column + neighbor[1];
+
+            if (((rowToCheck >= 0) && (rowToCheck < this.size)) && ((colToCheck >= 0) && (colToCheck < this.size))) {
+
+                neiToCheck = this.block[rowToCheck][colToCheck];
+
+                if ((neiToCheck.getStatus() == Const.prob2) && (countInfected(new int[] {rowToCheck, colToCheck}) == 1)) {
+                    neiToCheck.setProbability(Const.prob1);
+                } else if (neiToCheck.getStatus() == Const.prob1) {
+                    neiToCheck.setProbability(Const.EMPTY);
                 }
-
             }
         }
+
+
     }
-
-
     private int countInfected(int[] cords) {
 
         int infected = 0;
@@ -119,7 +139,7 @@ public class City {
             neiToCheck = this.block[rowToCheck][colToCheck];
 
             if (((rowToCheck >= 0) && (rowToCheck < this.size)) && ((colToCheck >= 0) && (colToCheck < this.size))) {
-                if (neiToCheck.getStatus() == 'i') {
+                if (neiToCheck.getStatus() == 'I') {
                     infected++;
                 }
             }
@@ -130,10 +150,92 @@ public class City {
 
 
 
+    private void updateInfections() {
+        Random rand = new Random();
+
+        for (int row = 0; row < this.size; row++) {
+            for (int column = 0; column < this.size; column++) {
+                Neighbourhood currentNei = this.block[row][column];
+
+                if (rand.nextDouble() < currentNei.getProbability()) {
+                    this.newlyInfected.add(new int[] {row, column});
+                    currentNei.setStatus('I');
+                }
+            }
+        }
+
+    }
+
+
+    private void administerVax() {
+
+        Random random = new Random();
+
+        int randomColumn;
+        int randomRow;
+
+        randomColumn = random.nextInt(this.size);
+        randomRow = random.nextInt(this.size);
+
+        for (int times = 0; times < Const.administrations; times++) {
+            do {
+                randomColumn = random.nextInt(this.size);
+                randomRow = random.nextInt(this.size);
+
+            } while (this.block[randomRow][randomColumn].getStatus() != Const.EMPTY);
+
+            (this.block[randomRow][randomColumn]).setStatus('V');
+            this.block[randomRow][randomColumn].setChangedStatus(true);
+            this.vaccinationQ.add(new int[]{randomRow, randomColumn});
+
+        }
+
+
+
+    }
+
 
     private void updateCounters() {
-        // update the newlyInfected, the countres for if resistant yet etc
+        Neighbourhood currentNei;
+
+        for (int row = 0; row < this.size; row++) {
+            for (int column = 0; column < this.size; column++) {
+                currentNei = this.block[row][column];
+
+                if ((currentNei.getStatus() == 'V') || (currentNei.getStatus() == 'I')) {
+                    currentNei.updateCounter();
+
+                    if (currentNei.getStatus() == 'R') {
+                        this.updateProximity2(row, column);
+
+                    }
+                }
+            }
+        }
+
     }
+
+    private void displayGrid() {
+        StringBuilder string = new StringBuilder();
+        string.append("===================================\n");
+        for (Neighbourhood[] row : this.block) {
+            string.append("[");
+
+            for (Neighbourhood neighbourhood : row) {
+                string.append(neighbourhood.getStatus() + " ");
+            }
+            string.append("]\n");
+        }
+        string.append("===================================");
+
+
+        System.out.println(string);
+    }
+
+
+
+
+
 
 
 
