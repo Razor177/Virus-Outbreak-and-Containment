@@ -7,13 +7,15 @@ public class Main {
 
 
         int size = 10;
-        double prob1 = 0.1;
-        double prob2 = 0.3;
+        double prob1 = 0.15;
+        double prob2 = 0.45;
         int resisTime = 5;
         int administrations = 1;
-        int cooldownVac = 10;
+        int cooldownVac = 3;
+        int wantedRuns = 20;
 
-        new Const(prob1, prob2, resisTime, administrations, cooldownVac);
+        new Const(prob1, prob2, resisTime, administrations, cooldownVac, wantedRuns);
+
         City city = new City(size);
         city.start();
         city.updateCity();

@@ -7,60 +7,74 @@ import java.awt.*;
  * @version Nov 2023
  */
 public class Visualizer extends JFrame{
-    final int MAX_X = (int)getToolkit().getScreenSize().getWidth();
-    final int MAX_Y = (int)getToolkit().getScreenSize().getHeight();    
-    final int GRIDSIZE = MAX_Y/60;
-    final int CENTER_COL = (MAX_X/4/GRIDSIZE)/2;
-    final int CENTER_ROW = (MAX_Y/2/GRIDSIZE)/2;
+    final int MAX_X = Toolkit.getDefaultToolkit().getScreenSize().width; // creates the max x
+    final int MAX_Y = Toolkit.getDefaultToolkit().getScreenSize().height; // creates the may y
+    final int GridToScreenRatio;
 
     private GraphicsPanel panel;
-    private String twoDstring;
-    private int rows, cols;
-    private int leftCol, topRow;
-    
-    Visualizer (String twoDstring) {
+    private City city;
+    private Neighbourhood[][] block;
+
+    Visualizer (City city) {
+        super("Virus Outbreak");
+
         this.panel = new GraphicsPanel();
         this.panel.setBackground(Color.LIGHT_GRAY);
         this.getContentPane().add(BorderLayout.CENTER, panel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setSize(MAX_X/4, MAX_Y/2);
+        this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
         this.setVisible(true);
-        
-        this.twoDstring = twoDstring;
-        this.rows = twoDstring.split("\n").length;  //number of lines  
-        this.cols = twoDstring.indexOf("\n");       //length of the first line
-        this.leftCol = CENTER_COL - cols/2;
-        this.topRow  = CENTER_ROW - rows/2;
+
+
+        this.city = city;
+        this.block = city.getBlock();
+
+        this.GridToScreenRatio = MAX_Y / (block.length);
+
+
     }
     
     private class GraphicsPanel extends JPanel {
+
+        GraphicsPanel() {
+
+        }
+
         @Override
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
-            //draw the twoDstring
-            String[] lines = twoDstring.split("\n");
-            for (int row=0; row<rows; row++){
-                String line = lines[row];
-                for (int col=0; col<cols; col++){
-                    if (line.charAt(col) == Const.EMPTY){
-                        g.setColor(Color.LIGHT_GRAY);
-                        g.fillRect((leftCol+col)*GRIDSIZE, (topRow+row)*GRIDSIZE, GRIDSIZE, GRIDSIZE);                        
-                    }else if (line.charAt(col) == Const.TRAP){                       
-                        g.setColor(Color.BLACK);
-                        g.fillOval((leftCol+col)*GRIDSIZE, (topRow+row)*GRIDSIZE, GRIDSIZE, GRIDSIZE);
+
+            Neighbourhood currentN;
+            for(int row = 0; row < block.length; row++) {
+                for(int column = 0; column < block.length; column++) {
+
+                    currentN = block[row][column];
+                    if (currentN.getStatus() == 'I') {
+                        g.setColor(Color.RED);
+//                        g.fillRect((leftCol+column)*GRIDSIZE, (topRow+row)*GRIDSIZE, GRIDSIZE, GRIDSIZE);
+                    } else if (currentN.getStatus() == 'R') {
+                        g.setColor(Color.GREEN);
+//                        g.fillRect((leftCol+column)*GRIDSIZE, (topRow+row)*GRIDSIZE, GRIDSIZE, GRIDSIZE);
+                    } else if (currentN.getStatus() == 'V') {
+                        g.setColor(Color.BLUE);
+//                        g.fillRect((leftCol+column)*GRIDSIZE, (topRow+row)*GRIDSIZE, GRIDSIZE, GRIDSIZE);
+                    } else {
+                        g.setColor(Color.GRAY);
+//                        g.fillRect((leftCol+column)*GRIDSIZE, (topRow+row)*GRIDSIZE, GRIDSIZE, GRIDSIZE);
                     }
+
+
+                    g.fillRect(column*GridToScreenRatio, row*GridToScreenRatio, GridToScreenRatio, GridToScreenRatio);
+//                    g.setColor(Color.BLACK);
+//                    g.drawRect(column*GridToScreenRatio, row*GridToScreenRatio, GridToScreenRatio, GridToScreenRatio);
                 }
-            }            
-            //draw the grid lines
-            g.setColor(Color.BLACK);
-            for (int x=0; x<MAX_X; x=x+GRIDSIZE){
-                g.drawLine(x,0,x,MAX_Y);
             }
-            for (int y=0; y<MAX_Y; y=y+GRIDSIZE){
-                g.drawLine(0,y,MAX_X,y);
-            }
-            
+
+
+
             this.repaint();
         }
     }
+
+
 }

@@ -14,27 +14,15 @@ public class City {
             {0, -1},           {0, 1},
             {1, -1},  {1, 0},  {1, 1}
     };
-    private final Comparator<int[]> neiComparator = new Comparator<int[]>() {
-        @Override
-        public int compare(int[] cordSet1, int[] cordSet2) {
-            return (countInfected(cordSet1) > countInfected(cordSet2))  ? 1:-1;
-        }
-    };
 
-    
-
+    private int runs = 0;
+    private Visualizer visualizer;
 
 
 
     public City(int size) {
         this.size = size;
     }
-
-
-
-
-
-
 
     public void start() {
         this.block = new Neighbourhood[this.size][this.size];
@@ -52,19 +40,34 @@ public class City {
 
         this.block[randomRow][randomColumn].setStatus('I');
         this.newlyInfected.add(new int[] {randomRow, randomColumn});
+
+        this.visualizer = new Visualizer(this);
+        this.runs++;
     }
 
     public void updateCity() {
-        while (true) {
-            try{Thread.sleep(2000); } catch(Exception e) {}
+
+        while (this.runs <= Const.wantedRuns) {
+            visualizer.repaint();
+
+            try{Thread.sleep(1000); } catch(Exception e) {}
+
 
             this.updateInfections();
             this.updateProbabilities();
-            this.administerVax();
+            if (runs > Const.cooldownVac) {
+                this.administerVax();
+            }
             this.updateCounters();
 
-            this.displayGrid();
+
+            //this.displayGrid();
+
+            this.runs++;
+
         }
+
+//
 
     }
 
@@ -115,7 +118,7 @@ public class City {
 
                 neiToCheck = this.block[rowToCheck][colToCheck];
 
-                if ((neiToCheck.getStatus() == Const.prob2) && (countInfected(new int[] {rowToCheck, colToCheck}) == 1)) {
+                if ((neiToCheck.getStatus() == Const.prob2) && (countInfected(new int[] {rowToCheck, colToCheck}) >= 1)) {
                     neiToCheck.setProbability(Const.prob1);
                 } else if (neiToCheck.getStatus() == Const.prob1) {
                     neiToCheck.setProbability(Const.EMPTY);
@@ -233,10 +236,16 @@ public class City {
     }
 
 
+    public Neighbourhood[][] getBlock() {
+        return block;
+    }
 
+    public int getSize() {
+        return size;
+    }
 
-
-
-
+    public int getRuns() {
+        return runs;
+    }
 
 }
