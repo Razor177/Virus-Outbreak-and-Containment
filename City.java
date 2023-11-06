@@ -41,6 +41,7 @@ public class City {
         this.block[randomRow][randomColumn].setStatus('I');
         this.newlyInfected.add(new int[] {randomRow, randomColumn});
 
+
         this.visualizer = new Visualizer(this);
         this.runs++;
     }
@@ -50,7 +51,7 @@ public class City {
         while (this.runs <= Const.wantedRuns) {
             visualizer.repaint();
 
-            try{Thread.sleep(1000); } catch(Exception e) {}
+            try{Thread.sleep(100); } catch(Exception e) {}
 
 
             this.updateInfections();
@@ -188,7 +189,6 @@ public class City {
             } while (this.block[randomRow][randomColumn].getStatus() != Const.EMPTY);
 
             (this.block[randomRow][randomColumn]).setStatus('V');
-            this.block[randomRow][randomColumn].setChangedStatus(true);
             this.vaccinationQ.add(new int[]{randomRow, randomColumn});
 
         }

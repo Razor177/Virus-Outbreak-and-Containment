@@ -8,7 +8,7 @@ import java.awt.*;
  */
 public class Visualizer extends JFrame{
     final int MAX_X = Toolkit.getDefaultToolkit().getScreenSize().width; // creates the max x
-    final int MAX_Y = Toolkit.getDefaultToolkit().getScreenSize().height; // creates the may y
+    final int MAX_Y = (Toolkit.getDefaultToolkit().getScreenSize().height) - 50; // creates the may y
     final int GridToScreenRatio;
 
     private GraphicsPanel panel;
