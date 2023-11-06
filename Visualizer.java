@@ -7,12 +7,10 @@ import java.awt.*;
  * @version Nov 2023
  */
 public class Visualizer extends JFrame{
-    final int MAX_X = Toolkit.getDefaultToolkit().getScreenSize().width; // creates the max x
     final int MAX_Y = (Toolkit.getDefaultToolkit().getScreenSize().height) - 50; // creates the may y
     final int GridToScreenRatio;
 
     private GraphicsPanel panel;
-    private City city;
     private Neighbourhood[][] block;
 
     Visualizer (City city) {
@@ -26,7 +24,6 @@ public class Visualizer extends JFrame{
         this.setVisible(true);
 
 
-        this.city = city;
         this.block = city.getBlock();
 
         this.GridToScreenRatio = MAX_Y / (block.length);

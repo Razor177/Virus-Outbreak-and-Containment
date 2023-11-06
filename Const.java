@@ -1,6 +1,5 @@
 public final class Const{
     public static final char EMPTY = '-';
-    public static final char TRAP = 't';
     public static double prob1;
     public static double prob2;
     public static int timeTillResistance;

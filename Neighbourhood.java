@@ -11,6 +11,7 @@ public class Neighbourhood {
         } else {
             this.status = 'R';
             this.probability = 0;
+
         }
     }
 
