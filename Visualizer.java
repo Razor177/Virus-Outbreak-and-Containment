@@ -1,17 +1,18 @@
 import javax.swing.*;
 import java.awt.*;
-
 /**
- * Example 2D String visualization
- * @author ICS4UE
- * @version Nov 2023
+ * Visualizer
+ * @author Michael Khart
+ * ISC4UE
+ * Version - 1.0 - 11/04/2023
+ * This class is the visulizer of the simulation. It will use the City and draw its class variable block (the city itself)
  */
 public class Visualizer extends JFrame{
-    final int MAX_Y = (Toolkit.getDefaultToolkit().getScreenSize().height) - 0; // creates the may y
+    final int MAX_Y = (Toolkit.getDefaultToolkit().getScreenSize().height) - 0; // creates the height of the simulation
     final int GridToScreenRatio;
 
     private GraphicsPanel panel;
-    private Neighbourhood[][] block;
+    private Neighbourhood[][] block; // the city itself from the City object
 
     Visualizer (City city) {
         super("Virus Outbreak");
@@ -25,17 +26,12 @@ public class Visualizer extends JFrame{
 
 
         this.block = city.getBlock();
-
-        this.GridToScreenRatio = MAX_Y / (block.length);
+        this.GridToScreenRatio = MAX_Y / (block.length); // finds the proper scaling for the screen
 
 
     }
     
     private class GraphicsPanel extends JPanel {
-
-        GraphicsPanel() {
-
-        }
 
         @Override
         public void paintComponent(Graphics g) {
@@ -48,22 +44,16 @@ public class Visualizer extends JFrame{
                     currentN = block[row][column];
                     if (currentN.getStatus() == 'I') {
                         g.setColor(Color.RED);
-//                        g.fillRect((leftCol+column)*GRIDSIZE, (topRow+row)*GRIDSIZE, GRIDSIZE, GRIDSIZE);
                     } else if (currentN.getStatus() == 'R') {
                         g.setColor(Color.GREEN);
-//                        g.fillRect((leftCol+column)*GRIDSIZE, (topRow+row)*GRIDSIZE, GRIDSIZE, GRIDSIZE);
                     } else if (currentN.getStatus() == 'V') {
                         g.setColor(Color.BLUE);
-//                        g.fillRect((leftCol+column)*GRIDSIZE, (topRow+row)*GRIDSIZE, GRIDSIZE, GRIDSIZE);
                     } else {
                         g.setColor(Color.GRAY);
-//                        g.fillRect((leftCol+column)*GRIDSIZE, (topRow+row)*GRIDSIZE, GRIDSIZE, GRIDSIZE);
                     }
 
 
                     g.fillRect(column*GridToScreenRatio, row*GridToScreenRatio, GridToScreenRatio, GridToScreenRatio);
-//                    g.setColor(Color.BLACK);
-//                    g.drawRect(column*GridToScreenRatio, row*GridToScreenRatio, GridToScreenRatio, GridToScreenRatio);
                 }
             }
 
