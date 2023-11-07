@@ -73,7 +73,7 @@ public class City {
         while (this.runs <= Const.wantedRuns) {
             visualizer.repaint();
 
-            try{Thread.sleep(60); } catch(Exception e) {}
+            try{Thread.sleep(Const.delay); } catch(Exception e) {}
 
 
             this.updateInfections();
@@ -94,13 +94,12 @@ public class City {
 
 
     /**
-     * updateProbabilities
-     * this will list through all of the newly infected neighbourhoods and call the updateProbability method to update
-     * the probabilities of neighbours.
+     * updateInfectedN
+     * this will update all ofthe probabilities for the neighbours of a newly infected nieghbourhood
      */
     private void updateInfectedN() {
         for (int[] cordSet : newlyInfected) {
-            updateProximity(cordSet[0], cordSet[1]);
+            updateProximity(cordSet[0], cordSet[1], true);
         }
         this.newlyInfected.clear();
     }
@@ -110,54 +109,12 @@ public class City {
 
     /**
      * updateProximity
-     * this method will increase the risk of all of the surrounding neighbourhoods of the given cordinates
+     * this method will change the risk of all of the surrounding neighbourhoods of the given cordinates based on if a
+     * neighbourhood has become infected or resistant
      * @param row - row of neighbhourhood
      * @param column - column of the neighbourhood
      */
-    private void updateProximity(int row, int column) {
-
-        int rowToCheck;
-        int colToCheck;
-        Neighbourhood NToCheck;
-
-        for (int[] neighbor : NEIGHBOURS) {
-            rowToCheck = row + neighbor[0];
-            colToCheck = column + neighbor[1];
-
-            if (((rowToCheck >= 0) && (rowToCheck < this.SIZE)) && ((colToCheck >= 0) && (colToCheck < this.SIZE))) {
-
-                NToCheck = this.block[rowToCheck][colToCheck];
-
-                if (NToCheck.getStatus() != 'R' ) {
-                    if (NToCheck.getStatus() == Const.DEFAULT) {
-                        NToCheck.setProbability(Const.prob1);
-                    } else if (NToCheck.getStatus() == Const.prob1) {
-                        NToCheck.setProbability(Const.prob2);
-                    }
-                }
-
-            }
-        }
-
-
-    }
-
-    private void updateResistantN() {
-        for (int[] cordSet : toUpdateNeighbourhoods) {
-            updateProximity2(cordSet[0], cordSet[1]);
-        }
-        this.toUpdateNeighbourhoods.clear();
-
-    }
-
-    /**
-     * updateProximity2
-     * this method will update the surrounding neighbourhoods to the cordinates given, and will downgrade their probability
-     * for getting sick.
-     * @param row - the row of the neighbourhood
-     * @param column - the column
-     */
-    private void updateProximity2(int row, int column) {
+    private void updateProximity(int row, int column, boolean option) {
 
         int rowToCheck;
         int colToCheck;
@@ -171,21 +128,46 @@ public class City {
             if (((rowToCheck >= 0) && (rowToCheck < this.SIZE)) && ((colToCheck >= 0) && (colToCheck < this.SIZE))) {
 
                 NToCheck = this.block[rowToCheck][colToCheck];
-                infectedN = countInfected(new int[] {rowToCheck, colToCheck});
 
-                if (NToCheck.getStatus() != 'R') {
-                    if (infectedN >1) {
-                        NToCheck.setProbability(Const.prob2);
-                    } else if (infectedN == 1) {
-                        NToCheck.setProbability(Const.prob1);
-                    } else {
-                        NToCheck.setProbability(0);
+                if (option) {
+                    if (NToCheck.getStatus() != 'R' ) {
+                        if (NToCheck.getStatus() == Const.DEFAULT) {
+                            NToCheck.setProbability(Const.prob1);
+                        } else if (NToCheck.getStatus() == Const.prob1) {
+                            NToCheck.setProbability(Const.prob2);
+                        }
                     }
+                } else if (!option){
+                    infectedN = countInfected(new int[] {rowToCheck, colToCheck});
+
+                    if (NToCheck.getStatus() != 'R') {
+                        if (infectedN >1) {
+                            NToCheck.setProbability(Const.prob2);
+                        } else if (infectedN == 1) {
+                            NToCheck.setProbability(Const.prob1);
+                        } else {
+                            NToCheck.setProbability(0);
+                        }
+                    }
+
                 }
+
 
             }
         }
 
+
+    }
+
+    /**
+     * updateResistanceN
+     * will update all of the risks of getting infected for newly resistant neighbourhoods' neighbours
+     */
+    private void updateResistantN() {
+        for (int[] cordSet : toUpdateNeighbourhoods) {
+            updateProximity(cordSet[0], cordSet[1], false);
+        }
+        this.toUpdateNeighbourhoods.clear();
 
     }
 

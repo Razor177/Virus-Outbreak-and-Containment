@@ -10,7 +10,6 @@ import java.awt.*;
 public class Visualizer extends JFrame{
     final int MAX_Y = (Toolkit.getDefaultToolkit().getScreenSize().height) - 0; // creates the height of the simulation
     final int GridToScreenRatio;
-
     private GraphicsPanel panel;
     private Neighbourhood[][] block; // the city itself from the City object
 
@@ -19,22 +18,23 @@ public class Visualizer extends JFrame{
      * Constructor - will create a Visualizer instance
      * @param city - the City for the Vizualizer to vizualize
      */
-    Visualizer (City city) {
+    Visualizer(City city) {
+
         super("Virus Outbreak");
 
         this.panel = new GraphicsPanel();
         this.panel.setBackground(Color.LIGHT_GRAY);
         this.getContentPane().add(BorderLayout.CENTER, panel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
-        this.setVisible(true);
-
 
         this.block = city.getBlock();
-        this.GridToScreenRatio = MAX_Y / (block.length); // finds the proper scaling for the screen
+        this.GridToScreenRatio = MAX_Y / block.length;
 
+        this.setSize(city.getBlock().length * GridToScreenRatio, city.getBlock().length * GridToScreenRatio);
+        this.setVisible(true);
 
     }
+
 
     /**
      * GraphicsPanel

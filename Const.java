@@ -13,5 +13,6 @@ public final class Const{
     public static int administrations;
     public static int cooldownVac;
     public static int wantedRuns;
+    public static int delay;
 
 }
