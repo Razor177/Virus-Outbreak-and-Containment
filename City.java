@@ -40,7 +40,7 @@ public class City {
 
     /**
      * start
-     * this method will initiate all of the needed objects populate the block, and start the infection.
+     * this method will initiate all the needed objects populate the block, and start the infection.
      */
     public void start() {
         this.block = new Neighbourhood[this.SIZE][this.SIZE];
