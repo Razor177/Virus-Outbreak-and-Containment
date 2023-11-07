@@ -58,7 +58,7 @@ public class Visualizer extends JFrame{
 
             for(int row = 0; row < block.length; row++) {
                 for(int column = 0; column < block.length; column++) {
-                    currentN = block[row][column]
+                    currentN = block[row][column];
 
                     if (currentN.getStatus() == 'I') {
                         g.setColor(Color.RED);

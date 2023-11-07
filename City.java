@@ -3,6 +3,7 @@ import java.util.Queue;
 import java.lang.StringBuilder;
 import java.util.Queue;
 import java.util.Random;
+import java.util.ArrayList;
 
 /**
  * City
@@ -19,6 +20,7 @@ public class City {
     private final int SIZE;
     private Queue<int[]> newlyInfected = new LinkedList<>();
     private LinkedList<int[]> vaccinationQ = new LinkedList<>();
+    private ArrayList<int[]> toUpdateNeighbourhoods = new ArrayList<>();
     private final int[][] NEIGHBOURS = {
             {-1, -1}, {-1, 0}, {-1, 1},
             {0, -1},           {0, 1},
@@ -58,6 +60,8 @@ public class City {
 
         this.visualizer = new Visualizer(this);
         this.runs++;
+
+
     }
 
     /**
@@ -69,18 +73,16 @@ public class City {
         while (this.runs <= Const.wantedRuns) {
             visualizer.repaint();
 
-            try{Thread.sleep(100); } catch(Exception e) {}
+            try{Thread.sleep(60); } catch(Exception e) {}
 
 
             this.updateInfections();
-            this.updateProbabilities();
+            this.updateInfectedN();
             if (runs > Const.cooldownVac) {
                 this.administerVax();
             }
             this.updateCounters();
-
-
-            //this.displayGrid();
+            this.updateResistantN();
 
             this.runs++;
 
@@ -96,11 +98,15 @@ public class City {
      * this will list through all of the newly infected neighbourhoods and call the updateProbability method to update
      * the probabilities of neighbours.
      */
-    private void updateProbabilities() {
+    private void updateInfectedN() {
         for (int[] cordSet : newlyInfected) {
             updateProximity(cordSet[0], cordSet[1]);
         }
+        this.newlyInfected.clear();
     }
+
+
+
 
     /**
      * updateProximity
@@ -112,7 +118,7 @@ public class City {
 
         int rowToCheck;
         int colToCheck;
-        Neighbourhood neiToCheck;
+        Neighbourhood NToCheck;
 
         for (int[] neighbor : NEIGHBOURS) {
             rowToCheck = row + neighbor[0];
@@ -120,19 +126,29 @@ public class City {
 
             if (((rowToCheck >= 0) && (rowToCheck < this.SIZE)) && ((colToCheck >= 0) && (colToCheck < this.SIZE))) {
 
-                neiToCheck = this.block[rowToCheck][colToCheck];
+                NToCheck = this.block[rowToCheck][colToCheck];
 
-                if (neiToCheck.getStatus() == Const.DEFAULT) {
-                    neiToCheck.setProbability(Const.prob1);
-                } else if (neiToCheck.getStatus() == Const.prob1) {
-                    neiToCheck.setProbability(Const.prob2);
+                if (NToCheck.getStatus() != 'R' ) {
+                    if (NToCheck.getStatus() == Const.DEFAULT) {
+                        NToCheck.setProbability(Const.prob1);
+                    } else if (NToCheck.getStatus() == Const.prob1) {
+                        NToCheck.setProbability(Const.prob2);
+                    }
                 }
+
             }
         }
 
 
     }
 
+    private void updateResistantN() {
+        for (int[] cordSet : toUpdateNeighbourhoods) {
+            updateProximity2(cordSet[0], cordSet[1]);
+        }
+        this.toUpdateNeighbourhoods.clear();
+
+    }
 
     /**
      * updateProximity2
@@ -145,7 +161,8 @@ public class City {
 
         int rowToCheck;
         int colToCheck;
-        Neighbourhood neiToCheck;
+        Neighbourhood NToCheck;
+        int infectedN;
 
         for (int[] neighbor : NEIGHBOURS) {
             rowToCheck = row + neighbor[0];
@@ -153,13 +170,19 @@ public class City {
 
             if (((rowToCheck >= 0) && (rowToCheck < this.SIZE)) && ((colToCheck >= 0) && (colToCheck < this.SIZE))) {
 
-                neiToCheck = this.block[rowToCheck][colToCheck];
+                NToCheck = this.block[rowToCheck][colToCheck];
+                infectedN = countInfected(new int[] {rowToCheck, colToCheck});
 
-                if ((neiToCheck.getStatus() == Const.prob2) && (countInfected(new int[] {rowToCheck, colToCheck}) >= 1)) {
-                    neiToCheck.setProbability(Const.prob1);
-                } else if (neiToCheck.getStatus() == Const.prob1) {
-                    neiToCheck.setProbability(Const.DEFAULT);
+                if (NToCheck.getStatus() != 'R') {
+                    if (infectedN >1) {
+                        NToCheck.setProbability(Const.prob2);
+                    } else if (infectedN == 1) {
+                        NToCheck.setProbability(Const.prob1);
+                    } else {
+                        NToCheck.setProbability(0);
+                    }
                 }
+
             }
         }
 
@@ -177,16 +200,17 @@ public class City {
         int infected = 0;
         int rowToCheck;
         int colToCheck;
-        Neighbourhood neiToCheck;
+        Neighbourhood NToCheck;
 
         for (int[] neighbor : NEIGHBOURS) {
             rowToCheck = cords[0] + neighbor[0];
             colToCheck = cords[1] + neighbor[1];
 
-            neiToCheck = this.block[rowToCheck][colToCheck];
-
             if (((rowToCheck >= 0) && (rowToCheck < this.SIZE)) && ((colToCheck >= 0) && (colToCheck < this.SIZE))) {
-                if (neiToCheck.getStatus() == 'I') {
+
+                NToCheck = this.block[rowToCheck][colToCheck];
+
+                if (NToCheck.getStatus() == 'I') {
                     infected++;
                 }
             }
@@ -267,7 +291,7 @@ public class City {
                     currentN.updateCounter();
 
                     if (currentN.getStatus() == 'R') {
-                        this.updateProximity2(row, column);
+                        this.toUpdateNeighbourhoods.add(new int[] {row, column});
                     }
                 }
             }
