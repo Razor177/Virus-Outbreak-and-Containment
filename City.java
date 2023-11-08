@@ -1,14 +1,11 @@
 import java.util.LinkedList;
-import java.util.Queue;
-import java.lang.StringBuilder;
-import java.util.Queue;
 import java.util.Random;
-import java.util.ArrayList;
+
 
 /**
  * City
  * @author Michael Khart
- * ISC4UE
+ * ICS4UE
  * Version - 1.0 - 11/04/2023
  * This class acts as the main class. It houses the updateCity method which is the method that will update the city and
  * run the simulation.
@@ -18,9 +15,9 @@ public class City {
 
     private Neighbourhood[][] block; // this is the city itself
     private final int SIZE;
-    private Queue<int[]> newlyInfected = new LinkedList<>();
+    private LinkedList<int[]> newlyInfected = new LinkedList<>();
     private LinkedList<int[]> vaccinationQ = new LinkedList<>();
-    private ArrayList<int[]> toUpdateNeighbourhoods = new ArrayList<>();
+    private LinkedList<int[]> toUpdateNeighbours = new LinkedList<>();
     private final int[][] NEIGHBOURS = {
             {-1, -1}, {-1, 0}, {-1, 1},
             {0, -1},           {0, 1},
@@ -164,10 +161,10 @@ public class City {
      * will update all of the risks of getting infected for newly resistant neighbourhoods' neighbours
      */
     private void updateResistantN() {
-        for (int[] cordSet : toUpdateNeighbourhoods) {
+        for (int[] cordSet : toUpdateNeighbours) {
             updateProximity(cordSet[0], cordSet[1], false);
         }
-        this.toUpdateNeighbourhoods.clear();
+        this.toUpdateNeighbours.clear();
 
     }
 
@@ -269,13 +266,18 @@ public class City {
             for (int column = 0; column < this.SIZE; column++) {
                 currentN = this.block[row][column];
 
-                if ((currentN.getStatus() == 'V') || (currentN.getStatus() == 'I')) {
+
+                if (currentN.getStatus() == 'V') {
+                    currentN.updateCounter();
+
+                } else if (currentN.getStatus() == 'I') {
                     currentN.updateCounter();
 
                     if (currentN.getStatus() == 'R') {
-                        this.toUpdateNeighbourhoods.add(new int[] {row, column});
+                        this.toUpdateNeighbours.add(new int[] {row, column});
                     }
                 }
+
             }
         }
     }

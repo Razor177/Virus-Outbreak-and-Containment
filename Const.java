@@ -1,7 +1,7 @@
 /**
  * Const
  * @author Michael Khart
- * ISC4UE
+ * ICS4UE
  * Version - 1.0 - 11/04/2023
  * This class is filled with public constant variable to be used inside the simulation
  */

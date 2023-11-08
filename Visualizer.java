@@ -3,12 +3,12 @@ import java.awt.*;
 /**
  * Visualizer
  * @author Michael Khart
- * ISC4UE
+ * ICS4UE
  * Version - 1.0 - 11/04/2023
  * This class is the visulizer of the simulation. It will use the City and draw its class variable block (the city itself)
  */
 public class Visualizer extends JFrame{
-    final int MAX_Y = (Toolkit.getDefaultToolkit().getScreenSize().height) - 0; // creates the height of the simulation
+    final int MAX_Y = Toolkit.getDefaultToolkit().getScreenSize().height; // creates the height of the simulation
     final int GridToScreenRatio;
     private GraphicsPanel panel;
     private Neighbourhood[][] block; // the city itself from the City object
@@ -39,7 +39,7 @@ public class Visualizer extends JFrame{
     /**
      * GraphicsPanel
      * @author Michael Khart
-     * ISC4UE
+     * ICS4UE
      * Version - 1.0 - 11/04/2023
      * Overrides the paintComponent method to custom paint the grid of Neighbourhood elements with different colors
      * based on their status, and triggers continuous repainting.

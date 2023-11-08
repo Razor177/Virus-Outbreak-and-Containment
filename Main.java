@@ -3,7 +3,7 @@ import java.util.Scanner;
 /**
  * Main
  * @author Michael Khart
- * ISC4UE
+ * ICS4UE
  * Version - 1.0 - 11/04/2023
  * This class will just instantiate needed variables and objects and start the game loop
  */
@@ -14,7 +14,7 @@ public class Main {
         Scanner input = new Scanner(System.in);
         System.out.println("=========================================================== \n" +
                            "                  Welcome to Virus Outbreak                 \n" +
-                           "Please select how many cycles of the simualtion you would   \n" +
+                           "Please select how many cycles of the simulation you would   \n" +
                            "like to play out:");
         System.out.println("=========================================================== \n");
 
@@ -24,6 +24,8 @@ public class Main {
         city.start();
         city.updateCity();
 
+
+        input.close();
 
     }
 
@@ -40,17 +42,19 @@ public class Main {
         Const.wantedRuns = wantedRuns;
         Const.cooldownVac = wantedRuns/10;
         Const.administrations = wantedRuns/12;
-        Const.delay = wantedRuns/25;
+
+        if (wantedRuns/25 > 20) {
+            Const.delay = wantedRuns/25;
+        } else {
+            Const.delay = 20;
+        }
 
         Const.prob1 = 0.10;
         Const.prob2 = 0.50;
         Const.timeTillResistance = 5;
 
         return (wantedRuns/10) * 4;
-
-
-
-
-
     }
+
+
 }
