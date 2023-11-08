@@ -2,7 +2,7 @@
  * Neighbourhood
  * @author Michael Khart
  * ISC4UE
- * Version - 1.0 - 11/04/2023
+ * Version - 1.0 - 11/05/2023
  * This is the custom object that is used to populate the City with. It has some class variables which will be used
  * in the simulation
  */
@@ -13,7 +13,7 @@ public class Neighbourhood {
 
     /**
      * updateCounter
-     * will update all counters inside of the nieghbourhood instance and if needed will give resistance to the neighbourhood
+     * will update all counters inside the nieghbourhood instance and if needed will give resistance to the neighbourhood
      */
     public void updateCounter() {
         if (timeTillResistance > 0) {
@@ -21,7 +21,6 @@ public class Neighbourhood {
         } else {
             this.status = 'R';
             this.probability = 0;
-
         }
     }
 

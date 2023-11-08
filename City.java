@@ -22,7 +22,7 @@ public class City {
             {-1, -1}, {-1, 0}, {-1, 1},
             {0, -1},           {0, 1},
             {1, -1},  {1, 0},  {1, 1}
-    };
+    }; // this is just used to simplify the process of checking neighbours of some specific index
     private int runs = 0;
     private Visualizer visualizer;
 
@@ -34,6 +34,8 @@ public class City {
      */
     public City(int SIZE) {
         this.SIZE = SIZE;
+
+        this.start();
     }
 
 
@@ -50,14 +52,12 @@ public class City {
             }
         }
 
-
+        // start infection
         this.block[(this.SIZE / 2)][(this.SIZE / 2)].setStatus('I');
         this.newlyInfected.add(new int[] {(this.SIZE / 2), (this.SIZE / 2)});
 
-
         this.visualizer = new Visualizer(this);
         this.runs++;
-
 
     }
 
@@ -68,13 +68,13 @@ public class City {
     public void updateCity() {
 
         while (this.runs <= Const.wantedRuns) {
-            visualizer.repaint();
 
-            try{Thread.sleep(Const.delay); } catch(Exception e) {}
-
+            try{
+                Thread.sleep(Const.delay);
+            } catch(Exception e) {}
 
             this.updateInfections();
-            this.updateInfectedN();
+            this.updatenumInfected();
             if (runs > Const.cooldownVac) {
                 this.administerVax();
             }
@@ -82,6 +82,8 @@ public class City {
             this.updateResistantN();
 
             this.runs++;
+
+            visualizer.repaint();
 
         }
 
@@ -91,10 +93,10 @@ public class City {
 
 
     /**
-     * updateInfectedN
+     * updatenumInfected
      * this will update all ofthe probabilities for the neighbours of a newly infected nieghbourhood
      */
-    private void updateInfectedN() {
+    private void updatenumInfected() {
         for (int[] cordSet : newlyInfected) {
             updateProximity(cordSet[0], cordSet[1], true);
         }
@@ -116,7 +118,7 @@ public class City {
         int rowToCheck;
         int colToCheck;
         Neighbourhood NToCheck;
-        int infectedN;
+        int numInfected;
 
         for (int[] neighbor : NEIGHBOURS) {
             rowToCheck = row + neighbor[0];
@@ -126,7 +128,12 @@ public class City {
 
                 NToCheck = this.block[rowToCheck][colToCheck];
 
-                if (option) {
+                // this method is used to both increase and decrease the probabilities of getting sick for neighbours
+                // in an effort to save memory and increase speed, there is an option variable which chooses between
+                // increasing or decreasing the probabilites of getting sick for neighbours of a neighbourhood at a
+                // specific cordinate
+
+                if (option) {  // If we are increasing the risk of getting sick (happens when a neighbourhood is infected)
                     if (NToCheck.getStatus() != 'R' ) {
                         if (NToCheck.getStatus() == Const.DEFAULT) {
                             NToCheck.setProbability(Const.prob1);
@@ -134,13 +141,13 @@ public class City {
                             NToCheck.setProbability(Const.prob2);
                         }
                     }
-                } else if (!option){
-                    infectedN = countInfected(new int[] {rowToCheck, colToCheck});
+                } else if (!option){ // If we are decreasing risk of getting sick (happens when an infected turns resistant)
+                    numInfected = countInfected(new int[] {rowToCheck, colToCheck});
 
                     if (NToCheck.getStatus() != 'R') {
-                        if (infectedN >1) {
+                        if (numInfected >1) {
                             NToCheck.setProbability(Const.prob2);
-                        } else if (infectedN == 1) {
+                        } else if (numInfected == 1) {
                             NToCheck.setProbability(Const.prob1);
                         } else {
                             NToCheck.setProbability(0);
@@ -236,9 +243,6 @@ public class City {
         int randomColumn;
         int randomRow;
 
-        randomColumn = random.nextInt(this.SIZE);
-        randomRow = random.nextInt(this.SIZE);
-
         for (int times = 0; times < Const.administrations; times++) {
             do {
                 randomColumn = random.nextInt(this.SIZE);
@@ -273,6 +277,8 @@ public class City {
                 } else if (currentN.getStatus() == 'I') {
                     currentN.updateCounter();
 
+                    // if an infected turns resistant, we have to decrease the risk of all its neighbours of getting sick
+                    // so we add its cordinates to updateNeighbours to have their risk re-assesed
                     if (currentN.getStatus() == 'R') {
                         this.toUpdateNeighbours.add(new int[] {row, column});
                     }

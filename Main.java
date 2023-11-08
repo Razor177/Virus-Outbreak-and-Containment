@@ -21,8 +21,9 @@ public class Main {
         int wantedRuns = input.nextInt();
 
         City city = new City(findOptimalValues(wantedRuns));
-        city.start();
         city.updateCity();
+
+        System.out.println("Thank you for simulating! ");
 
 
         input.close();

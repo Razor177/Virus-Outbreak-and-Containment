@@ -1,5 +1,10 @@
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import java.awt.Toolkit;
+import java.awt.Color;
+import java.awt.BorderLayout;
+import java.awt.Graphics;
+
 /**
  * Visualizer
  * @author Michael Khart

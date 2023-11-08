@@ -3,7 +3,7 @@
  * @author Michael Khart
  * ICS4UE
  * Version - 1.0 - 11/04/2023
- * This class is filled with public constant variable to be used inside the simulation
+ * This class is filled with public constant variables to be used inside of the simulation
  */
 public final class Const{
     public static final char DEFAULT = ' ';
