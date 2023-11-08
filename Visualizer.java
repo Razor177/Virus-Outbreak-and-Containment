@@ -7,7 +7,7 @@ import java.awt.*;
  * Version - 1.0 - 11/04/2023
  * This class is the visulizer of the simulation. It will use the City and draw its class variable block (the city itself)
  */
-public class Visualizer extends JFrame{
+public class Visualizer extends JFrame {
     final int MAX_Y = Toolkit.getDefaultToolkit().getScreenSize().height; // creates the height of the simulation
     final int GridToScreenRatio;
     private GraphicsPanel panel;
@@ -19,7 +19,6 @@ public class Visualizer extends JFrame{
      * @param city - the City for the Vizualizer to vizualize
      */
     Visualizer(City city) {
-
         super("Virus Outbreak");
 
         this.panel = new GraphicsPanel();

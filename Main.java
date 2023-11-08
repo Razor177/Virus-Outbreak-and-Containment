@@ -40,18 +40,18 @@ public class Main {
     private static int findOptimalValues(int wantedRuns) {
 
         Const.wantedRuns = wantedRuns;
-        Const.cooldownVac = wantedRuns/10;
-        Const.administrations = wantedRuns/12;
+        Const.cooldownVac = wantedRuns/30;
+        Const.administrations = wantedRuns/15;
 
-        if (wantedRuns/25 > 20) {
+        if (wantedRuns/25 > 10) {
             Const.delay = wantedRuns/25;
         } else {
-            Const.delay = 20;
+            Const.delay = 10;
         }
 
         Const.prob1 = 0.10;
         Const.prob2 = 0.50;
-        Const.timeTillResistance = 5;
+        Const.timeTillResistance = 4;
 
         return (wantedRuns/10) * 4;
     }
