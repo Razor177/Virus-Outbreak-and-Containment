@@ -309,8 +309,8 @@ public class City {
 
     /**
      * getBlock
-     * Returns the 2D array of Neighbourhood objects.
-     * @return - The 2D array of Neighbourhood objects (block).
+     * Returns the 2D array of Neighbourhood objects
+     * @return - The 2D array of Neighbourhood objects (block)
      */
     public Neighbourhood[][] getBlock() {
         return block;
