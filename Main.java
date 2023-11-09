@@ -15,8 +15,8 @@ public class Main {
         System.out.println("=========================================================== \n" +
                            "                  Welcome to Virus Outbreak                 \n" +
                            "Please select how many cycles of the simulation you would   \n" +
-                           "like to play out:");
-        System.out.println("=========================================================== \n");
+                           "like to play out:                                           \n" +
+                           "=========================================================== \n" );
 
         int wantedRuns = input.nextInt();
 
@@ -44,10 +44,10 @@ public class Main {
         Const.cooldownVac = wantedRuns/30;
         Const.administrations = wantedRuns/15;
 
-        if (wantedRuns/25 > 10) {
-            Const.delay = wantedRuns/25;
+        if (wantedRuns/20 > 20) {
+            Const.delay = wantedRuns/20;
         } else {
-            Const.delay = 10;
+            Const.delay = 20;
         }
 
         Const.prob1 = 0.10;

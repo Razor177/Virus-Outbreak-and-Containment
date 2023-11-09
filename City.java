@@ -1,5 +1,8 @@
+import sun.awt.image.ImageWatched;
+
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.Queue;
 
 
 /**
@@ -25,6 +28,7 @@ public class City {
     }; // this is just used to simplify the process of checking neighbours of some specific index
     private int runs = 0;
     private Visualizer visualizer;
+    private Queue<Boolean> stillSpreading = new LinkedList<>(); // used just for the case where the infection dies out before the wanted runs is reached
 
 
     /**
@@ -56,6 +60,10 @@ public class City {
         this.block[(this.SIZE / 2)][(this.SIZE / 2)].setStatus('I');
         this.newlyInfected.add(new int[] {(this.SIZE / 2), (this.SIZE / 2)});
 
+        for (int runs = 0; runs < 11; runs++) {
+            this.stillSpreading.add(true);
+        }
+
         this.visualizer = new Visualizer(this);
         this.runs++;
 
@@ -67,7 +75,7 @@ public class City {
      */
     public void updateCity() {
 
-        while (this.runs <= Const.wantedRuns) {
+        while ((this.runs <= Const.wantedRuns) && stillSpreading()) {
 
             try{
                 Thread.sleep(Const.delay);
@@ -87,6 +95,7 @@ public class City {
 
         }
 
+
 //
 
     }
@@ -97,10 +106,19 @@ public class City {
      * this will update all ofthe probabilities for the neighbours of a newly infected nieghbourhood
      */
     private void updatenumInfected() {
-        for (int[] cordSet : newlyInfected) {
-            updateProximity(cordSet[0], cordSet[1], true);
+        this.stillSpreading.remove();
+
+        if (newlyInfected.size() > 0) {
+            for (int[] cordSet : newlyInfected) {
+                updateProximity(cordSet[0], cordSet[1], true);
+            }
+            this.newlyInfected.clear();
+            this.stillSpreading.add(true);
+        } else {
+            this.stillSpreading.add(false);
         }
-        this.newlyInfected.clear();
+
+
     }
 
 
@@ -222,6 +240,7 @@ public class City {
                     if (rand.nextDouble() < currentN.getProbability()) {
                         this.newlyInfected.add(new int[] {row, column});
                         currentN.setStatus('I');
+                        currentN.setProbability(0);
                     }
                 }
 
@@ -295,6 +314,22 @@ public class City {
      */
     public Neighbourhood[][] getBlock() {
         return block;
+    }
+
+    /**
+     * stillSpreading
+     * checks if there has been a single infection within the last 8 gamecycles
+     * @return - if there has been a single ifnection within the last 8 game cycles
+     */
+    private boolean stillSpreading() {
+
+        for (Boolean bool : this.stillSpreading) {
+            if (bool) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }
